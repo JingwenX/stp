@@ -1,6 +1,4 @@
-create or replace PACKAGE             STP_CP_UTIL_PKG AS 
-
-  /* Package for contract preparation. */
+create or replace PACKAGE                                     STP_CP_UTIL_PKG AS 
 
   DETAIL_COLLECTION_NAME CONSTANT VARCHAR2(30) := 'CONTRACT_DETAIL_COLLECTION';
   
