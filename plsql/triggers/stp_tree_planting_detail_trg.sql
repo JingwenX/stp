@@ -28,6 +28,8 @@ BEGIN
     IF (:OLD.inspection_status is null or :OLD.inspection_status = 'Not Started') and
        (:NEW.inspection_status <> 'Not Started') THEN
 
+       -- TODO: also notify users when change inspector.
+
        stp_pt_util_pkg.email_notification(  :NEW.id,
                                             :NEW.detail_num,
                                             :NEW.assignment_num,
