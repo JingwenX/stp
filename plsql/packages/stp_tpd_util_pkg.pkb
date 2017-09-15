@@ -1,4 +1,4 @@
-create or replace PACKAGE BODY                                     STP_TPD_UTIL_PKG AS
+create or replace PACKAGE BODY                                                                                     STP_TPD_UTIL_PKG AS
 
     /************************************************************************************************
     /*
@@ -10,8 +10,8 @@ create or replace PACKAGE BODY                                     STP_TPD_UTIL_
     /************************************************************************************************/ 
     PROCEDURE load_detail_row(P_TREE_PLANTING_DETAIL_ID IN  STP_TREE_PLANTING_DETAIL_ROW.TREE_PLANTING_DETAIL_ID%TYPE)
     AS
-        BEGIN
-     
+        BEGIN 
+      
         /* Truncate Collection if exsits. */
         if APEX_COLLECTION.COLLECTION_EXISTS (G_DETAIL_COLLECTION_NAME) then
             APEX_COLLECTION.DELETE_COLLECTION (G_DETAIL_COLLECTION_NAME);
@@ -276,7 +276,7 @@ create or replace PACKAGE BODY                                     STP_TPD_UTIL_
             QTY                       =  rec.n001,
             ORDER_NO                  =  rec.n003
             WHERE ID = rec.n005;
-
+ 
         WHEN rec.n004=0 AND rec.n005 IS NOT NULL THEN -- Deleted record
 
             BEGIN

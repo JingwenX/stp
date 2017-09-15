@@ -1,4 +1,4 @@
-create or replace package body stp_pricing_util_pkg as
+create or replace package body                         stp_pricing_util_pkg as
 
   /************************************************************************************************
   /*
@@ -17,7 +17,7 @@ create or replace package body stp_pricing_util_pkg as
     
     commit;
   end;
-
+ 
 
   /************************************************************************************************
   /*

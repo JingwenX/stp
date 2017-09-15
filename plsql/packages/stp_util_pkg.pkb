@@ -1,4 +1,4 @@
-create or replace package body stp_util_pkg as
+create or replace package body             stp_util_pkg as
 
   /************************************************************************************************
   /*

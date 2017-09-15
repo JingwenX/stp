@@ -1,4 +1,4 @@
-create or replace package stp_ni_util_pkg as 
+create or replace package             stp_ni_util_pkg as 
   
   /************************************************************************************************
   /*

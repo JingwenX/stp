@@ -1,16 +1,4 @@
-create or replace package body stp_ni_util_pkg as
-
-  /************************************************************************************************
-  /*
-  /* @function: validate_data_range
-  /*
-  /* @description: Validation function for tag actions. Returns True if the new tag range is not
-  /*               overlapped with exsitings.
-  /*
-  /* @rtype boolean - domain value based on domain type and numeric id.
-  /*
-  /* @note: the function loads data from page items. May cause issues if the page items are changed.
-  /************************************************************************************************/ 
+create or replace package body                                                                                                                                     stp_ni_util_pkg as
 
   function validate_data_range return boolean
   as
@@ -24,28 +12,21 @@ create or replace package body stp_ni_util_pkg as
 
     with candidates as
     (select tag_num from
-    (select rownum tag_num from dual connect by level <= l_range_end)
-      where tag_num >= l_range_from
-      union
-      select to_number(column_value) as tag_num from table(string_fnc.to_table(l_list, ','))
+   (select rownum tag_num from dual connect by level <= l_range_end)
+    where tag_num >= l_range_from
+   union
+   select to_number(column_value) as tag_num from table(string_fnc.to_table(l_list, ','))
     )
     select count(*) into l_count
     from candidates
     where tag_num in (select tag_num from stp_nursery_inspection where tag_color=l_color and year=l_year);
 
-    return l_count = 0;
+    
+    
+    return l_count=0;
   end;
 
 
-  /************************************************************************************************
-  /*
-  /* @procedure: create_or_save_tags
-  /*
-  /* @description: You can either feed a range to create new tags, or provide an id that is the 
-  /*               tag item to be updated.
-  /*
-  /* @note: the function loads data from page items. May cause issues if the page items are changed.
-  /************************************************************************************************/ 
   procedure create_or_save_tags
   as
   l_range_from   number                                                            := apex_util.get_session_state('p52_tag_num_input_from');
@@ -71,23 +52,22 @@ create or replace package body stp_ni_util_pkg as
   begin
 
 
-  -- Creating new if no id is provided.
-  if l_id is null then
+    /*creating new*/
+    if l_id is null then
 
-    for rec in (select tag_num from
-   (select rownum tag_num from dual connect by level <= l_range_end)
-    where tag_num >= l_range_from
-   union
-   select to_number(column_value) as tag_num from table(string_fnc.to_table(l_list, ',')))
-    loop
-      insert into stp_nursery_inspection 
-      (status_id, year, tag_num, tag_date, stock_type_id, plant_type_id, species_id, nursery_type, lot, tag_color, tree_dug, stem_wrapped, buds_emerged, average_root_collar_depth, comments, sub_stock_type_id, sub_plant_type_id, sub_species_id)  
-      values
-    (1, l_year, rec.tag_num, l_tag_date, l_stock_type, l_plant_type, l_species, l_nursery_type, l_farm_lot, l_tag_color, l_tree_dug, l_stem_wrapped, l_bud_emerged, l_arcd, l_comments, l_stock_type_sub, l_plant_type_sub, l_species_sub);
-    end loop;
-    commit;
-  
-  -- Update the item with given l_id.
+      for rec in (select tag_num from
+     (select rownum tag_num from dual connect by level <= l_range_end)
+      where tag_num >= l_range_from
+     union
+     select to_number(column_value) as tag_num from table(string_fnc.to_table(l_list, ',')))
+      loop
+        insert into stp_nursery_inspection 
+        (status_id, year, tag_num, tag_date, stock_type_id, plant_type_id, species_id, nursery_type, lot, tag_color, tree_dug, stem_wrapped, buds_emerged, average_root_collar_depth, comments, sub_stock_type_id, sub_plant_type_id, sub_species_id)  
+        values
+      (1, l_year, rec.tag_num, l_tag_date, l_stock_type, l_plant_type, l_species, l_nursery_type, l_farm_lot, l_tag_color, l_tree_dug, l_stem_wrapped, l_bud_emerged, l_arcd, l_comments, l_stock_type_sub, l_plant_type_sub, l_species_sub);
+      end loop;
+      commit;
+  /* update. */ 
   else
     update stp_nursery_inspection set 
       tag_date                  = l_tag_date,
@@ -105,22 +85,13 @@ create or replace package body stp_ni_util_pkg as
       sub_plant_type_id         = l_plant_type_sub,
       sub_species_id            = l_species_sub
     where id=l_id;
+
     commit;
   end if;
 
   end;
 
 
-  /************************************************************************************************
-  /*
-  /* @procedure: group_action_on_tags
-  /*
-  /* @description: Prcedure that manipulates tags. Cancel or re-active tags in given range.
-  /*
-  /* @type p_request in varchar2 - page request for the action.
-  /*
-  /* @note: the function loads data from page items. May cause issues if the page items are changed.
-  /************************************************************************************************/ 
   procedure group_action_on_tags (p_request in varchar2)
   as
     l_range_from   number          := apex_util.get_session_state('p53_tag_num_input_from');
