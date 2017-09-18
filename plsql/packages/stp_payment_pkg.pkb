@@ -180,7 +180,7 @@ create or replace package body                                                  
               s.STOCK_TYPE ||' - '|| s.PLANT_TYPE ||' - '|| t.SPECIES as "ITEM",
               t.CURRENTTREEHEALTH as "HEL",
               t.SIDEOFSTREET as "RD",
-              s.CONTRACTITEM as "CON",
+              p_year ||' -'|| to_char(s.CONTRACTITEM, '000') as "CON",
               t.MUNICIPALITY as "MUN",
               t.ONSTREET as "REGRD",
               s.DEFICIENCY as "DEF"          
@@ -205,9 +205,12 @@ create or replace package body                                                  
        where TREEID = s.TREEID)
        and s.CONTRACTOPERATION = 1 and s.activity_type_id<>2
        and s.CONTRACTYEAR = p_year
+       and t.STATUS = 'Active'
        order by s.TREEID
      ) d on STPDV.TREEID = d.TID
-     where STPDV.CONTRACTYEAR = p_year; 
+     where STPDV.CONTRACTYEAR = p_year
+     and STPDV.OBJECTID = (select max(OBJECTID) from STP_DEFICIENCY_V
+                      where TREEID = STPDV.TREEID); 
     end;
     
     /**********************************************************************
