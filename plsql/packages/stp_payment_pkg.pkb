@@ -180,7 +180,7 @@ create or replace package body                                                  
               s.STOCK_TYPE ||' - '|| s.PLANT_TYPE ||' - '|| t.SPECIES as "ITEM",
               t.CURRENTTREEHEALTH as "HEL",
               t.SIDEOFSTREET as "RD",
-              p_year ||' -'|| to_char(s.CONTRACTITEM, '000') as "CON",
+              s.CONTRACTITEM as "CON",
               t.MUNICIPALITY as "MUN",
               t.ONSTREET as "REGRD",
               s.DEFICIENCY as "DEF"          
