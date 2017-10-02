@@ -1,4 +1,4 @@
-create or replace PACKAGE BODY                         STP_PT_UTIL_PKG AS
+create or replace PACKAGE BODY                                     STP_PT_UTIL_PKG AS
 
 
    
@@ -61,7 +61,7 @@ create or replace PACKAGE BODY                         STP_PT_UTIL_PKG AS
       l_template.template := REPLACE(l_template.template, '##Location##', l_location);
  
 
-      email_util_pkg.send_email(p_to => 'adam.barkovitz@york.ca;gary.kang@york.ca',--org_util_pkg.get_emails(p_record_inspector)),
+      email_util_pkg.send_email(p_to => org_util_pkg.get_emails(p_record_inspector),
                                 p_from_address => 'apex.support@york.ca',
                                 p_from_name => 'Street Tree Planting and Establishment Contract Administration System',
                                 p_subject => l_template.subject,
