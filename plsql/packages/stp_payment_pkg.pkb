@@ -1,4 +1,4 @@
-create or replace package body                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         stp_payment_pkg as
+create or replace package body                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         stp_payment_pkg as
     
     
     /**********************************************************************
@@ -17,6 +17,8 @@ create or replace package body                                                  
       l_temp2 number;
     begin 
         sys.dbms_output.enable;
+        sys.dbms_output.put_line('testing');
+                apex_debug.log_dbms_output;
         for i in 1..APEX_APPLICATION.G_F01.COUNT loop
             
             select count(*) into l_temp1 from bsmart_data.STP_PAYMENT_ITEMS STPPI 
@@ -43,11 +45,33 @@ create or replace package body                                                  
                 end if;
             else
             insert into STP_PAYMENT_ITEMS(TREEID, ACTIVITY_TYPE, PAYMENT_STATUS)
-            select distinct TREEID, ACTIVITY_TYPE_ID, 1 from STP_DEFICIENCY_V
-            where TREEID||'-'||ACTIVITY_TYPE_ID = APEX_APPLICATION.G_F01(i);
+            select distinct sdv.TREEID, 
+                   case when TREEID ||'-1' = APEX_APPLICATION.G_F01(i)
+                        and (select distinct s.ACTIVITY_TYPE_ID 
+                             from STP_DEFICIENCY_V s
+                             where s.TREEID = sdv.TREEID
+                             and s.OBJECTID = (select max(OBJECTID) from stp_deficiency_v
+                                               where treeid = s.treeid)) = 2
+                             then 1
+                             else sdv.ACTIVITY_TYPE_ID
+                   end as "ACTIVITY_TYPE",
+                   1 
+            from STP_DEFICIENCY_V sdv
+            where sdv.TREEID||'-'||sdv.ACTIVITY_TYPE_ID = APEX_APPLICATION.G_F01(i)
+            union all
+            select distinct sdv.TREEID, 1, 1 
+            from STP_DEFICIENCY_V sdv
+            where sdv.TREEID ||'-1' = APEX_APPLICATION.G_F01(i)
+            and (select distinct s.ACTIVITY_TYPE_ID 
+                 from STP_DEFICIENCY_V s
+                 where s.TREEID = sdv.TREEID
+                 and s.OBJECTID = (select max(OBJECTID) from stp_deficiency_v
+                                   where treeid = s.treeid)) = 2;
             end case;
             
         end loop;
+        
+        commit;
         
     end;
     
@@ -69,6 +93,8 @@ create or replace package body                                                  
       PAYMENT_CERT_NO = (select max(nvl(PAYMENT_CERT_NO,0)) + 1 from STP_PAYMENT_ITEMS)
       where PAYMENT_STATUS = 1
       and TREEID in (select TREEID from STP_DEFICIENCY_V where CONTRACTYEAR = p_year);
+      
+      commit;
     end;
     
     /**********************************************************************
@@ -199,7 +225,7 @@ create or replace package body                                                  
         MULCHRING, MULCHSTEM, STEMCROWNROPE, TREEGATORBAG, TREEGUARD, PRUNING, STAKING, 
         EXTRATREE, INCORRECTLOCATION, UNAPPROVEDSPECIES, INCORRECTSIZE, MISSINGTREE)
        ) s
-       join transd.fsttree@etrans t on s.TREEID = t.TREEID
+       join transd.fsttree_evw@etrans t on s.TREEID = t.TREEID
        where MATCH = 1
        and s.OBJECTID = (select max(OBJECTID) from STP_DEFICIENCY_V
        where TREEID = s.TREEID)

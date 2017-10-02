@@ -1,8 +1,8 @@
 create or replace package body                         stp_ew_util_pkg as
 procedure create_new_col(
-	p_year in number
-	) as
-	l_query varchar2(8000);
+  p_year in number
+  ) as
+  l_query varchar2(8000);
 begin
 
 if  apex_collection.collection_exists(P_COLLECTION_NAME=>'COL_EXTRA_WORK')
@@ -83,9 +83,9 @@ end; --end begin
 
                 
 procedure create_col_from_save(
-	p_year in number
-	) as
-	l_query varchar2(8000);
+  p_year in number
+  ) as
+  l_query varchar2(8000);
 begin
 
 if  apex_collection.collection_exists(P_COLLECTION_NAME=>'COL_EXTRA_WORK')
@@ -93,26 +93,26 @@ if  apex_collection.collection_exists(P_COLLECTION_NAME=>'COL_EXTRA_WORK')
     APEX_COLLECTION.DELETE_COLLECTION('COL_EXTRA_WORK');
     end if;
 stp_ew_util_pkg.update_new_add_rec(p_year);                      
-l_query := q'[select    		  
-		  stp_ew_payment_save.CONTRACT_ITEM_ID,                                                 --c001
-          stp_ew_payment_save.contract_item_num,                                            	--c002               
+l_query := q'[select          
+      stp_ew_payment_save.CONTRACT_ITEM_ID,                                                 --c001
+          stp_ew_payment_save.contract_item_num,                                              --c002               
           stp_ew_payment_save.created_by,                                                       --c003
           stp_ew_payment_save.created_on,                                                       --c004
           stp_ew_payment_save.updated_by,                                                       --c005
           stp_ew_payment_save.updated_on,                                                       --c006
           stp_ew_payment_save.payment_status,                                                   --c007
           stp_ew_payment_save.payment_cert_no,                                                  --c008
-          stp_ew_payment_save.qty_assigned,                                   					--c009
+          stp_ew_payment_save.qty_assigned,                                             --c009
           stp_ew_payment_save.qty_to_pay,                                                       --c010
           stp_ew_payment_save.price,                                                            --c011
-          stp_ew_payment_save.regional_road,                                                	--c012 
-          stp_ew_payment_save.between_road_1,                                               	--c013       
-          stp_ew_payment_save.between_road_2,                                               	--c014
-          stp_ew_payment_save.type_id,                                                    		--c015
-          stp_ew_payment_save.description,                                                		--c016
+          stp_ew_payment_save.regional_road,                                                  --c012 
+          stp_ew_payment_save.between_road_1,                                                 --c013       
+          stp_ew_payment_save.between_road_2,                                                 --c014
+          stp_ew_payment_save.type_id,                                                        --c015
+          stp_ew_payment_save.description,                                                    --c016
           stp_ew_payment_save.QTY_COMMITED_TO_PAY,                                              --c017
-          stp_ew_payment_save.contract_detail_id,                                   			--c018
-          stp_ew_payment_save.qty_remained_unpaid, 									                      --c019	
+          stp_ew_payment_save.contract_detail_id,                                         --c018
+          stp_ew_payment_save.qty_remained_unpaid,                                        --c019  
           stp_ew_payment_save.measurement --c020
 from  stp_ew_payment_save join stp_contract_item on stp_ew_payment_save.CONTRACT_ITEM_ID  = stp_contract_item.id and stp_contract_item.year =]' || p_year ||q'[ order by stp_ew_payment_save.CONTRACT_ITEM_ID]';
 --l_query := replace(l_query, '{RATE}', to_char(p_rate));

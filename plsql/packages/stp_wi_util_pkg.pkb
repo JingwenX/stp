@@ -1,4 +1,4 @@
-create or replace PACKAGE BODY             STP_WI_UTIL_PKG AS
+create or replace PACKAGE BODY                                                                         STP_WI_UTIL_PKG AS
 
 
   /************************************************************************************************
@@ -56,7 +56,8 @@ create or replace PACKAGE BODY             STP_WI_UTIL_PKG AS
                           p_warrant_inspection_status in stp_wrnty_inspection.warrant_inspection_status%type,
                           p_repl_status in stp_wrnty_inspection.replacement_status%type,
                           p_repl_inspectior in stp_wrnty_inspection.replancement_inspectior%type,
-                          p_repl_inspection_status in stp_wrnty_inspection.replacement_inspection_status%type)
+                          p_repl_inspection_status in stp_wrnty_inspection.replacement_inspection_status%type,
+                          p_to_email in varchar2)
   as
     l_template stp_email_template%rowtype;
   begin
@@ -78,8 +79,8 @@ create or replace PACKAGE BODY             STP_WI_UTIL_PKG AS
     l_template.template := REPLACE(l_template.template, '##ReplaceInspector##', p_repl_inspectior);
     l_template.template := REPLACE(l_template.template, '##ReplaceInspectionStatus##', p_repl_inspection_status);
     
-    email_util_pkg.send_email(p_to => 'hunter.schofield@york.ca' ||';'|| 'gary.kang@york.ca',--org_util_pkg.get_emails(p_inspector)),
-                              p_from_address => 'hunter.schofield@york.ca',
+    email_util_pkg.send_email(p_to => 'hunter.schofield@york.ca',--'adam.barkovitz@york.ca' ||';'|| 'gary.kang@york.ca',--org_util_pkg.get_emails(p_inspector)),
+                              p_from_address => 'apex.york@york.ca',
                               p_from_name => 'Street Tree Planting and Establishment Contract Administration System',
                               p_subject => l_template.subject,
                               p_message => l_template.template);

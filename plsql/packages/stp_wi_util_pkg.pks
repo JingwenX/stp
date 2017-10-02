@@ -1,4 +1,4 @@
-create or replace PACKAGE             STP_WI_UTIL_PKG AS 
+create or replace PACKAGE                         STP_WI_UTIL_PKG AS 
 
     /************************************************************************************************
     /*
@@ -24,6 +24,7 @@ create or replace PACKAGE             STP_WI_UTIL_PKG AS
                             p_warrant_inspection_status in stp_wrnty_inspection.warrant_inspection_status%type,
                             p_repl_status in stp_wrnty_inspection.replacement_status%type,
                             p_repl_inspectior in stp_wrnty_inspection.replancement_inspectior%type,
-                            p_repl_inspection_status in stp_wrnty_inspection.replacement_inspection_status%type);
+                            p_repl_inspection_status in stp_wrnty_inspection.replacement_inspection_status%type,
+                            p_to_email in varchar2);
     
 END STP_WI_UTIL_PKG;

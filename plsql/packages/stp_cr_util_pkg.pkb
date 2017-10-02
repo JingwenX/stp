@@ -1,4 +1,4 @@
-create or replace package body                                                                                                                                                             STP_CR_UTIL_PKG as 
+create or replace package body                                                                                                                                                                                                             STP_CR_UTIL_PKG as 
  
     procedure email_notification(p_year in stp_deficiency_v.contractyear%type,
                              p_contract_item_num in stp_deficiency_v.contractitem%type,
@@ -34,8 +34,8 @@ create or replace package body                                                  
       l_template.template := REPLACE(l_template.template, '##RepairInspectionStatus##', p_inspect_stat);
       l_template.template := REPLACE(l_template.template, '##Location##', p_loc);
       
-      email_util_pkg.send_email(p_to => 'hunter.schofield@york.ca' ||';'|| 'gary.kang@york.ca',--org_util_pkg.get_emails(p_inspector)),
-                                p_from_address => 'hunter.schofield@york.ca',
+      email_util_pkg.send_email(p_to => org_util_pkg.get_emails(p_inspector),
+                                p_from_address => 'apex.support@york.ca',
                                 p_from_name => 'Street Tree Planting and Establishment Contract Administration System',
                                 p_subject => l_template.subject,
                                 p_message => l_template.template);

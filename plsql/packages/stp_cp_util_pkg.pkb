@@ -1,4 +1,4 @@
-create or replace PACKAGE BODY                                                                                                                                                                                                                         STP_CP_UTIL_PKG AS
+create or replace PACKAGE BODY                                                                                                                                                                                                                                     STP_CP_UTIL_PKG AS
 
 
     /************************************************************************************************
@@ -24,7 +24,8 @@ create or replace PACKAGE BODY                                                  
         /* Load detail rows into collection. */
         for rec in (SELECT *
                     from STP_CONTRACT_DETAIL_V
-                    WHERE CONTRACT_ITEM_ID = P_CONTRACT_ITEM_ID)
+                    WHERE CONTRACT_ITEM_ID = P_CONTRACT_ITEM_ID
+                    order by id)
         loop
             APEX_COLLECTION.ADD_MEMBER (
                 p_collection_name => DETAIL_COLLECTION_NAME,

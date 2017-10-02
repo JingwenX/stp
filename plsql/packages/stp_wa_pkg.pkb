@@ -1,4 +1,4 @@
-create or replace PACKAGE BODY                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     STP_WA_PKG
+create or replace PACKAGE BODY                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             STP_WA_PKG
 as
 
 
@@ -995,13 +995,16 @@ procedure update_extra_work_detail as
       l_con number;
       l_seq number;
       l_err number := 0;
+      l_last number; --add
     begin
-
-      APEX_DEBUG.ENABLE (p_level => 2);
-      APEX_DEBUG.LOG_MESSAGE(
-      p_message => 'test',
-      p_level => 2 );
-
+    --add
+      select max(seq_id) into l_last from apex_collections where collection_name = 'LOAD_CONTENT';
+      APEX_COLLECTION.DELETE_MEMBER(
+        p_collection_name => 'LOAD_CONTENT',
+        p_seq => l_last);
+      commit;
+   --end of add   
+      
       select count(*) into l_err from(
         select SEQ_ID from STP_WA_SAVE 
         where WATERING_ASSIGNMENT_NUM = p_assign
@@ -1165,7 +1168,7 @@ procedure merge_or_cancel_upload(p_assign in number, p_choice in number, p_year 
                 STP_CONTRACTOR_UPLOAD."TOTAL_ITEMS_CONFIRMED",
                 STP_CONTRACTOR_UPLOAD."COMMENTS", 
                 STP_CONTRACTOR_UPLOAD."CONTRACTOR_WATERING_ID", 
-                STP_CONTRACTOR_UPLOAD."LOCATION_NOTES" as "LOCATION_NOTES", --change to stp_contractor_upload_location_note
+                STP_WA_SAVE."LOCATION_NOTES" as "LOCATION_NOTES", --change to stp_contractor_upload_location_note
                 STP_CONTRACTOR_UPLOAD."SEQ_ID", 
                 (select max(nvl(CONTRACTOR_UPLOAD_VERSION, 0)) + 1 from STP_WA_SAVE where WATERING_ASSIGNMENT_NUM = p_assign and watering_assignment_year = p_year),
                 p_assign, 

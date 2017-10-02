@@ -1,4 +1,4 @@
-create or replace package             STP_CR_UTIL_PKG as 
+create or replace package                         STP_CR_UTIL_PKG as 
 
 procedure email_notification(p_year in stp_deficiency_v.contractyear%type,
                              p_contract_item_num in stp_deficiency_v.contractitem%type,
