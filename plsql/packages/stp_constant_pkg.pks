@@ -17,7 +17,7 @@ create or replace PACKAGE                                                       
   GC_EM_LOCK_TITLE VARCHAR2(100) := '[Notification] Contract Items Have Been Locked';
   GC_EM_LOCK_HEADER VARCHAR2(300) := 'Notification from Street Tree Planting and Establishment Contract Administration System<br><br>
                                       The following items has been locked by the administrator: <br>';
-  GC_EM_LOCK_ITEM   VARCHAR2(300) := ' <a href="http://ykr-dev-apex.devyork.ca/apexenv/f?p=199:3:::NO:13:P3_ID:{ITEM_ID}">{ITEM_NUM}</a>.<br>';
+  GC_EM_LOCK_ITEM   VARCHAR2(300) := ' <a href="http://ykr-apex/apexenv/f?p=199:3:::NO:13:P3_ID:{ITEM_ID}">{ITEM_NUM}</a>.<br>';
 
                                        
 END STP_CONSTANT_PKG;
