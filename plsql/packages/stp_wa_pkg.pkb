@@ -1,7 +1,18 @@
 create or replace PACKAGE BODY                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             STP_WA_PKG
 as
 
+/**********************************************************************/ 
+/*
+/* @procedure: load_watering_item
+/*
+/* @description: load data directly from etrans table for trees, then group by RINS and Roadsides, and load
+/* rin_comments, location_notes, on-hold number from the lastest assignment. And save into a temp table stp_wa_detail
+/*
+/* @type p_year In number - the current contract year
+/*
+/* @rtype <return_type> - <description>
 
+/**********************************************************************/ 
 procedure load_watering_item(p_year in number) as
 
 l_query varchar(5000);
@@ -254,7 +265,17 @@ end loop;
         
   end;
 
+/**********************************************************************/ 
+/*
+/* @procedure: update_upd_ind
+/*
+/* @description: update the on_hold row update_indicators to 1 so that they could be modified in APEX IG .
+/*
+/*
+/* @type p_year In number - the current contract year
+/* @rtype <return_type> - <description>
 
+/**********************************************************************/ 
 
 procedure update_upd_ind as
     begin
@@ -379,7 +400,17 @@ procedure update_extra_work_detail as
             end loop;
     end loop;
     end;
-    
+/**********************************************************************/ 
+/*
+/* @procedure: restore_on_hold_and_comments
+/*
+/* @description: restore on_hold numbers, location notes and RIN comments from latest assginment.
+/*
+/*
+/* @type p_year In number - the current contract year
+/* @rtype <return_type> - <description>
+
+/**********************************************************************/ 
     procedure restore_on_hold_and_comments(p_year in number) as
     l_query varchar(2000);
     begin
@@ -441,7 +472,21 @@ procedure update_extra_work_detail as
       --when not matched (there's a new rin), keep the on_hold and do nothing  
     
     end;
-    
+/**********************************************************************/ 
+/*
+/* @procedure: update_rin_status
+/*
+/* @description: compare the current assignment with the lastest assginment on the assignment numbers on each RIN + Roadside
+/* and put a new/updated indicator.
+/* "New" RIN + Roadside: this RIN + Roadside is not in the previous assignment.
+/* "Updated" RIN + Roadside: this RIN + Roadside is in the previous assginment, but has a different number of trees assigned
+/* compare to the lastest assignment.
+/*
+/*
+/* @type p_year In number - the current contract year
+/* @rtype <return_type> - <description>
+
+/**********************************************************************/ 
     --set new_or_updated information before inserting to stp_wa_save
     procedure update_rin_status(p_year in number) as
     begin
@@ -497,7 +542,19 @@ procedure update_extra_work_detail as
           and swsoh.watering_assignment_year = p_year)
         and exists(select * from stp_wa_save where watering_assignment_year = p_year);
     end;
-    
+
+/**********************************************************************/ 
+/*
+/* @procedure: update_concat_mun
+/*
+/* @description: if one RIN belongs to two different municipality, concatenate them in the field municipality/
+/* For example: 01-13 Markham, 01-13 Richmond Hill -> 01-13 Markham, Richmond Hill
+/*
+/*
+/* @type p_year In number - the current contract year
+/* @rtype <return_type> - <description>
+
+/**********************************************************************/ 
     
     procedure update_concat_mun(p_year in number) as
     
@@ -524,7 +581,17 @@ procedure update_extra_work_detail as
         when matched then update
           set no_mun.municipality = concat_mun."mun_list";
     end;
-    
+/**********************************************************************/ 
+/*
+/* @procedure: update_total
+/*
+/* @description: recalculate the total number of assignment in each RIN + roadside and save back into temp table
+/*
+/*
+/* @type p_year In number - the current contract year
+/* @rtype <return_type> - <description>
+
+/**********************************************************************/ 
     procedure update_total(p_year in number) as
     l_query varchar(5000);
     begin
@@ -587,7 +654,18 @@ procedure update_extra_work_detail as
     end loop;
     end;
     
-    
+/**********************************************************************/ 
+/*
+/* @procedure: update_single_rin_total
+/*
+/* @description: when tree assignment number in one RIN + Roadside has been modified in the detailed modal page,
+/* calculate the total.
+/*
+/*
+/* @type p_year In number - the current contract year
+/* @rtype <return_type> - <description>
+
+/**********************************************************************/ 
     
     procedure update_single_rin_total(p_year in number, p_rin in varchar2, p_road_side in varchar2) as
     l_query varchar(5000);
@@ -658,7 +736,17 @@ procedure update_extra_work_detail as
     begin
     delete from stp_wa_detail where is_assigned_total = 1 and temp_save_year = p_year and rin = p_rin and road_side = p_road_side;
     end;
-    
+/**********************************************************************/ 
+/*
+/* @procedure: insert_aw_to_wa_cur
+/*
+/* @description: insert the newly added additional watering items to current watering assignment
+/*
+/*
+/* @type p_year In number - the current contract year
+/* @rtype <return_type> - <description>
+
+/**********************************************************************/ 
     procedure insert_aw_to_wa_cur(p_year in number)  as
     begin
     --insert one detail row from new aw + existing rin and road_side added during the process of adding watering assignment
@@ -872,7 +960,17 @@ procedure update_extra_work_detail as
     --insert master for aw + new rin and road_side added during the process of adding watering assignment
     stp_wa_pkg.insert_aw_new_rin_master(p_year);
     end;
-    
+/**********************************************************************/ 
+/*
+/* @procedure: insert_aw_new_rin_master
+/*
+/* @description: insert the master rows for newly added additional watering items.
+/*
+/*
+/* @type p_year In number - the current contract year
+/* @rtype <return_type> - <description>
+
+/**********************************************************************/ 
     procedure insert_aw_new_rin_master(p_year in number)
     as
     begin
@@ -989,7 +1087,18 @@ procedure update_extra_work_detail as
     end;
     
     
-    
+/**********************************************************************/ 
+/*
+/* @procedure: validate_contractor_upload
+/*
+/* @description: validate contractor upload and compare the information with the original watering assignment
+/* before upload the finished assignments to stp_wa_save
+/*
+/*
+/* @type p_year In number - the current contract year
+/* @rtype l_err - the upload error indicator
+
+/**********************************************************************/ 
     function validate_contractor_upload(p_assign in number, p_year in number) return number
     as
       l_con number;
@@ -1120,6 +1229,20 @@ procedure update_extra_work_detail as
       return l_err;
     end;
     
+/**********************************************************************/ 
+/*
+/* @procedure: merge_or_cancel_upload
+/*
+/* @description: merge the finished assginment to stp_wa_save table. Or cancel upload to discard the data upload process.
+/*
+/*
+/* @type p_assign In number - the selected assginment number
+/* @type p_choice In number - choice to merge or cancel uplaod
+/* @type p_year In number - the current contract year
+
+/* @rtype <return_type> - <description>
+
+/**********************************************************************/ 
 procedure merge_or_cancel_upload(p_assign in number, p_choice in number, p_year in number)
     as
     begin
@@ -1181,6 +1304,20 @@ procedure merge_or_cancel_upload(p_assign in number, p_choice in number, p_year 
       
     end;
     
+/**********************************************************************/ 
+/*
+/* @procedure: update_finalize_assignment
+/*
+/* @description: make one contrator upload (finished) assignment version to be finalized and ready to be paid. 
+/*
+/*
+/* @type p_assign In number - the selected assginment number
+/* @type p_choice In number - choice to merge or cancel uplaod
+/* @type p_year In number - the current contract year
+/*
+/* @rtype <return_type> - <description>
+
+/**********************************************************************/ 
     procedure update_finalize_assignment(p_assign in number, 
                                      p_version in number,
                                      p_year in number)

@@ -1,4 +1,15 @@
 create or replace package body                         stp_ew_util_pkg as
+/**********************************************************************
+/*
+/* @procedure: create_new_col
+/*
+/* @description: create collection from extra work and save it in a temp table
+/*
+/* @type p_year In Varchar2 - the current contract year
+/*
+/* @rtype <return_type> - <description>
+/**********************************************************************/ 
+
 procedure create_new_col(
   p_year in number
   ) as
@@ -81,6 +92,17 @@ if  apex_collection.collection_exists(P_COLLECTION_NAME=>'COL_EXTRA_WORK')
 
 end; --end begin               
 
+/**********************************************************************/ 
+/*
+/* @procedure: create_col_from_save
+/*
+/* @description: create collection from extra work and save it in a temp table
+/*
+/* @type p_year In Varchar2 - the current contract year
+/*
+/* @rtype <return_type> - <description>
+/*
+/**********************************************************************/ 
                 
 procedure create_col_from_save(
   p_year in number
@@ -119,7 +141,18 @@ from  stp_ew_payment_save join stp_contract_item on stp_ew_payment_save.CONTRACT
 APEX_COLLECTION.CREATE_COLLECTION_FROM_QUERY('COL_EXTRA_WORK', l_query);
                       
 end; --end begin
-                      
+                     
+/**********************************************************************/ 
+/* @procedure: update_extra_work_detail
+/*
+/* @description: update the temp table after saving the extra work details (number to pay, price)
+/*
+/* @type p_year In Varchar2 - the current contract year
+/*
+/* @rtype <return_type> - <description>
+/*
+/**********************************************************************/ 
+
 procedure update_extra_work_detail as
     begin
                 -- APEX_DEBUG.ENABLE (p_level => 2);
@@ -240,7 +273,18 @@ procedure update_extra_work_detail as
             end loop;
     end loop;
     end;
-    
+
+/**********************************************************************/ 
+/*
+/* @procedure: update_new_add_rec
+/*
+/* @description: update temp saved table with newly entered extra work items
+/*
+/* @type p_year In Varchar2 - the current contract year
+/*
+/* @rtype <return_type> - <description>
+
+/**********************************************************************/ 
 procedure update_new_add_rec(p_year in number) as
 begin
         for new_add_rec in

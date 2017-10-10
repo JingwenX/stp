@@ -1,6 +1,18 @@
 create or replace package body                                                                                                                                                                                                                                                                                                                                                                                                                                                                         STP_WP_UTIL_PKG as 
 
+/**********************************************************************/ 
+/*
+/* @procedure: create_new_payment_col
+/*
+/* @description: create collection from STP_WA_SAVE from selected watering assignment and final version
+/* then save it in a temp table
+/*
+/* @type p_year In number - the current contract year
+/* @type p_wa_num In number - the user selected watering assignment number
+/*
+/* @rtype <return_type> - <description>
 
+/**********************************************************************/ 
     
 procedure create_new_payment_col(
     p_year in number,
@@ -55,7 +67,19 @@ begin
     APEX_COLLECTION.CREATE_COLLECTION_FROM_QUERY('COL_STP_WATERING_PAYMENT', l_query);
     end;
 
+/**********************************************************************/ 
+/*
+/* @procedure: create_col_from_payment_temp
+/*
+/* @description: create collection from temp table if a temporarily saved payment table is available for
+/* selected watering assignment number and year
+/*
+/* @type p_year In number - the current contract year
+/* @type p_wa_num In number - the user selected watering assignment number
+/*
+/* @rtype <return_type> - <description>
 
+/**********************************************************************/ 
 procedure create_col_from_payment_temp(
     p_year in number,
   p_wa_num in number
@@ -99,7 +123,15 @@ begin
 end;
 
 
+/**********************************************************************/ 
+/*
+/* @procedure: update_wp_detail
+/*
+/* @description: update collection after changing number to pay, assign checkboxes and saved. 
+/*
+/* @rtype <return_type> - <description>
 
+/**********************************************************************/ 
 
 procedure update_wp_detail as
 begin
